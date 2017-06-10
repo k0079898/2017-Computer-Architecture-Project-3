@@ -35,7 +35,7 @@ void writeDisk()  //Write data into memory & free the buffer
     PC = temp;
     initPC = temp;
     for(m=4; m<8; m++) line = (line<<8) + (unsigned char)iBuffer[m];
-    for(m=8; m<8+line*4; m++) iDisk[m-8] = iBuffer[m];
+    for(m=8; m<8+line*4; m++) iDisk[PC+m-8] = iBuffer[m];
     //Handle with dDisk
     temp = 0;
     line = 0;
@@ -44,6 +44,21 @@ void writeDisk()  //Write data into memory & free the buffer
     for(m=4; m<8; m++) line = (line<<8) + (unsigned char)dBuffer[m];
     for(m=8; m<8+line*4; m++) dDisk[m-8] = dBuffer[m];
     //Free the buffer
-    free(iBuffer);
-    free(dBuffer);
+    //free(iBuffer);
+    //free(dBuffer);
+}
+
+void memDebug() //Memory debug function
+{
+  int i;
+  printf("iMemmory:\n");
+  for(i=0; i<DISK_SIZE; i++){
+    if((i+1)%4==0) printf("0x%04X: %02X\n", i, iDisk[i]);
+    else printf("0x%04X: %02X ", i, iDisk[i]);
+  }
+  printf("dMemmory:\n");
+  for(i=0; i<DISK_SIZE; i++){
+    if((i+1)%4==0) printf("0x%04X: %02X\n", i, dDisk[i]);
+    else printf("0x%04X: %02X ", i, dDisk[i]);
+  }
 }

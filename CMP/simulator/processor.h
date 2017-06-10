@@ -8,6 +8,7 @@
 #include "memory.h"
 #include "regfile.h"
 
+char iName[5];
 int cycles, halt;
 unsigned int instruction, opcode, rs, rt, rd, shamt, funct, immediate, address;
 int writeToRegZero, numberOverflow, overwriteHILO, memAddOverflow, dataMisaligned;

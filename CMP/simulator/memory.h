@@ -17,5 +17,7 @@ unsigned char dDisk[DISK_SIZE];
 
 void readBin();   //Read iimage.bin & dimage.bin into buffer
 void writeDisk();  //Write data into memory & free the buffer
+void memDebug();  //Memory debug function
+
 
 #endif

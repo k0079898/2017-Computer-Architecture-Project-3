@@ -124,7 +124,7 @@ void initMem()
 
 void checkITLB(unsigned int Vaddr)
 {
-    fprintf( trace, "\n\nCycle %d:\n", cycles);
+    fprintf( trace, "%d, %s:", cycles, iName);
     int find = 0, m;
     unsigned int VPN, PPN, offset, PhysicalAddr;
     VPN = Vaddr / I_var.pageSize;
@@ -137,8 +137,8 @@ void checkITLB(unsigned int Vaddr)
             PPN = iTLB[m].PhysicalPageNumber;
             iTLB[m].Cycle = cycles;
             iTLB_HIT++;
-            printf("ITLB HIT\n");
-            fprintf( trace, "ITLB ");
+            //printf("ITLB HIT\n");
+            fprintf( trace, " ITLB ");
             PhysicalAddr = (PPN * I_var.pageSize) + offset;  //Move on to check i-Cache
             checkICache(PhysicalAddr);
             break;
@@ -166,8 +166,8 @@ void checkITLB(unsigned int Vaddr)
         }else  //i-PTE MISS, update i-PTE & i-TLB & i-Cache
         {
             updateIPTE(VPN);  //update i-PTE
-            printf("IDisk HIT\n");
-            fprintf( trace, "iDisk");
+            //printf("IDisk HIT\n");
+            fprintf( trace, " Disk ");
             updateILTB(VPN);  //update i-LTB
             for(m=0 ; m<iTLB_entries ; m++)  //i-TLB HIT
             {
@@ -182,6 +182,7 @@ void checkITLB(unsigned int Vaddr)
             }
         }
     }
+    fprintf( trace, " ; ");
 }
 
 void updateILTB(unsigned int VPN)
@@ -216,7 +217,7 @@ int checkIPTE(unsigned int VPN)
     if(iPTE[VPN].ValidBit == 1)  //i-PTE HIT
     {
         iPTE_HIT++;
-        printf("IPTE HIT\n");
+        //printf("IPTE HIT\n");
         return 1;
     }else  //i-PTE MISS
     {
@@ -313,8 +314,8 @@ void checkICache(unsigned int PhysicalAddr)
         if( (iCache[index][0].Tag == tag) && (iCache[index][0].ValidBit == 1) )  //i-Cache HIT
         {
             iCache_HIT++;
-            printf("ICACHE HIT\n");
-            fprintf( trace, "ICache ");
+            //printf("ICACHE HIT\n");
+            fprintf( trace, " ICache ");
         }else  //i-Cache MISS, update i-Cache
         {
             iCache_MISS++;
@@ -334,7 +335,8 @@ void checkICache(unsigned int PhysicalAddr)
             {
                 find = 1;
                 iCache_HIT++;
-                printf("ICACHE HIT\n");
+                //rintf("ICACHE HIT\n");
+                fprintf( trace, " ICache ");
                 iCache[index][i].MRU = 1;
                 for(j=0 ; j<I_var.set ; j++)
                 {
@@ -402,9 +404,9 @@ void checkICache(unsigned int PhysicalAddr)
     }
 }
 
+//D
 void checkDTLB(unsigned int Vaddr)
 {
-    fprintf( trace, "\n");
     int find = 0, m;
     unsigned int VPN, PPN, offset, PhysicalAddr;
     VPN = Vaddr / D_var.pageSize;
@@ -417,8 +419,8 @@ void checkDTLB(unsigned int Vaddr)
             PPN = dTLB[m].PhysicalPageNumber;
             dTLB[m].Cycle = cycles;
             dTLB_HIT++;
-            printf("DTLB HIT\n");
-            fprintf( trace, "DTLB ");
+            //printf("DTLB HIT\n");
+            fprintf( trace, " DTLB ");
             PhysicalAddr = (PPN * D_var.pageSize) + offset;  //Move on to check d-Cache
             checkDCache(PhysicalAddr);
             break;
@@ -446,8 +448,8 @@ void checkDTLB(unsigned int Vaddr)
         }else  //d-PTE MISS, update d-PTE & d-TLB & d-Cache
         {
             updateDPTE(VPN);  //update d-PTE
-            printf("DDisk HIT\n");
-            fprintf( trace, "dDisk");
+            //printf("DDisk HIT\n");
+            fprintf( trace, " Disk ");
             updateDLTB(VPN);  //update d-LTB
             for(m=0 ; m<dTLB_entries ; m++)  //d-TLB HIT
             {
@@ -496,7 +498,7 @@ int checkDPTE(unsigned int VPN)
     if(dPTE[VPN].ValidBit == 1)  //d-PTE HIT
     {
         dPTE_HIT++;
-        printf("DPTE HIT\n");
+        //printf("DPTE HIT\n");
         return 1;
     }else  //d-PTE MISS
     {
@@ -590,12 +592,12 @@ void checkDCache(unsigned int PhysicalAddr)
     unsigned int tag = (PhysicalAddr / D_var.blockSize) / dCache_entries;
     if(D_var.set == 1)
     {
-        printf("%d %d %u %u\n", index, dCache[index][0].ValidBit, dCache[index][0].Tag, tag);
+        //printf("%d %d %u %u\n", index, dCache[index][0].ValidBit, dCache[index][0].Tag, tag);
         if( (dCache[index][0].Tag == tag) && (dCache[index][0].ValidBit == 1) )  //d-Cache HIT
         {
             dCache_HIT++;
-            printf("DCACHE HIT\n");
-            fprintf( trace, "DCache");
+            //printf("DCACHE HIT\n");
+            fprintf( trace, " DCache ");
         }else  //d-Cache MISS, update d-Cache
         {
             dCache_MISS++;
@@ -615,8 +617,8 @@ void checkDCache(unsigned int PhysicalAddr)
             {
                 find = 1;
                 dCache_HIT++;
-                printf("DCACHE HIT\n");
-                fprintf( trace, "DCache");
+                //printf("DCACHE HIT\n");
+                fprintf( trace, " DCache ");
                 dCache[index][i].MRU = 1;
                 for(j=0 ; j<D_var.set ; j++)
                 {
@@ -644,7 +646,7 @@ void checkDCache(unsigned int PhysicalAddr)
                     dCache[index][i].ValidBit = 1;
                     dCache[index][i].Tag = tag;
                     dCache[index][i].MRU = 1;
-                    for(j=0 ; j<I_var.set ; j++)
+                    for(j=0 ; j<D_var.set ; j++)
                     {
                         MRU_FULL = MRU_FULL & dCache[index][j].MRU;
                     }
@@ -672,7 +674,7 @@ void checkDCache(unsigned int PhysicalAddr)
                     }
                     if(MRU_FULL == 1)
                     {
-                        for(k=0 ; k<I_var.set ; k++)
+                        for(k=0 ; k<D_var.set ; k++)
                         {
                             if(k != i) dCache[index][k].MRU = 0;
                         }
